@@ -1,3 +1,5 @@
+// fs is a core Node package for reading and writing files
+var fs = require("fs");
 // Gets env info
 require("dotenv").config();
 //Gets keys.js info
@@ -107,6 +109,23 @@ var getMovieInfo = function (movie) {
             console.log(error.config);
         });
 }
+var doTheThing = function () {
+    // It's important to include the "utf8" parameter or the code will provide stream data (garbage)
+    // The code will store the contents of the reading inside the variable "data"
+    fs.readFile("random.txt", "utf8", function (error, data) {
+        // If the code experiences any errors it will log the error to the console.
+        if (error) {
+            return console.log(error);
+        }
+        // Then split it by commas (to make it more readable)
+        var dataArr = data.split(",");
+        if (dataArr.length == 2) {
+            pick(dataArr[0], dataArr[1]);
+        } else if (dataArr.length == 1) {
+            pick(dataArr[0]);
+        }
+    });
+}
 var pick = function (command, query) {
     // add the rest of commands when functions are done
     switch (command) {
@@ -120,7 +139,7 @@ var pick = function (command, query) {
             getMovieInfo(query);
             break;
         case "do-what-it-says":
-
+            doTheThing();
             break;
         // default can go at the end
         default:
@@ -131,56 +150,22 @@ var runThis = function () {
     pick(process.argv[2], process.argv[3]);
 }
 runThis(process.argv[2], process.argv[3]);
-// // fs is a core Node package for reading and writing files
-// var fs = require("fs");
 
-// // It's important to include the "utf8" parameter or the code will provide stream data (garbage)
-// // The code will store the contents of the reading inside the variable "data"
-// fs.readFile("random.txt", "utf8", function (error, data) {
+// Next, we store the text given to us from the command line.
+var text = "," + process.argv[2] + "," + process.argv[3];
 
-//     // If the code experiences any errors it will log the error to the console.
-//     if (error) {
-//         return console.log(error);
-//     }
-//     // We will then print the contents of data
-//     console.log(data);
+// Next, we append the text into the "sample.txt" file.
+// If the file didn't exist, then it gets created on the fly.
+fs.appendFile("log.txt", text, function (err) {
 
-//     // Then split it by commas (to make it more readable)
-//     var dataArr = data.split(",");
+    // If an error was experienced we will log it.
+    if (err) {
+        console.log(err);
+    }
 
-//     // We will then re-display the content as an array for later use.
-//     console.log(dataArr);
+    // If no error is experienced, we'll log the phrase "Content Added" to our node console.
+    else {
+        console.log("Content Added!");
+    }
 
-// });
-
-// // It will then print "Inception, Die Hard" in the file
-// fs.writeFile("movies.txt", "Inception, Die Hard", function (err) {
-
-//     // If the code experiences any errors it will log the error to the console.
-//     if (err) {
-//         return console.log(err);
-//     }
-
-//     // Otherwise, it will print: "movies.txt was updated!"
-//     console.log("movies.txt was updated!");
-
-// });
-
-// // Next, we store the text given to us from the command line.
-// var text = process.argv[2];
-
-// // Next, we append the text into the "sample.txt" file.
-// // If the file didn't exist, then it gets created on the fly.
-// fs.appendFile("log.txt", text, function (err) {
-
-//     // If an error was experienced we will log it.
-//     if (err) {
-//         console.log(err);
-//     }
-
-//     // If no error is experienced, we'll log the phrase "Content Added" to our node console.
-//     else {
-//         console.log("Content Added!");
-//     }
-
-// });
+});
